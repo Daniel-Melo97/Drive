@@ -1,7 +1,6 @@
 const User = use('App/Models/User')
-const Helpers = use('Helpers')
-const path = use('path')
 const fs = use('fs')
+const newPath = use('App/utils/newPath')
 
 class UserTests{
     async createUserTest(){
@@ -105,7 +104,7 @@ class UserTests{
             const upload = await client.post('/file')
                                 .loginVia(user, 'jwt')
                                 .field('test', 'true')
-                                .attach('file', path.join(Helpers.appRoot('files-for-tests'),'teste.txt'))
+                                .attach('file', newPath('teste.txt','files-for-tests'))
                                 .end()
 
 
@@ -115,7 +114,7 @@ class UserTests{
                                         .end()
             
             response.assertStatus(204)
-            assert.equal(fs.existsSync(path.join(Helpers.appRoot('uploads-test'),upload.body.storedname)), false)
+            assert.equal(fs.existsSync(newPath(upload.body.storedname,'uploads-test')), false)
             
         })
 

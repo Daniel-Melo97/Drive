@@ -50,7 +50,7 @@ class UserController {
         const id = auth.user.id
         const test = request.body.test
         
-        const files = await Database
+        const files = await Database //buscar no BD, todos os arquivos associados a este usuário
                             .select('storedname')
                             .from('files')
                             .where({
@@ -58,8 +58,8 @@ class UserController {
                             })
         
         try{
-            if(files.length > 0){
-                files.forEach(function(file){
+            if(files.length > 0){//verifica se ele possui arquivos
+                files.forEach(function(file){//removendo todos os arquivos da pasta
                     if(test == null){
                         fs.unlinkSync(newPath(file.storedname))
                     }else{
@@ -68,7 +68,7 @@ class UserController {
                 })
             }
             const user = await User.find(id)
-            await user.delete()
+            await user.delete() // deletando usuário
             response.noContent()
         }catch(err){
             response.send(err)

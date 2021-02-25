@@ -193,11 +193,11 @@ class FileController {
     }
 
     async removeFile({request,auth,response}){
-      const filename = request.body.nome
-      const test = request.body.test
+      const filename = request.body.nome //recebe nome do arquivo
+      const test = request.body.test //em caso de teste, recebe um valor indicando que a função está sendo testada
       const user_id = auth.user.id
 
-      const file = await Database
+      const file = await Database // busca no BD o arquivo correspondente ao usuário que fez a consulta
                       .select('*')
                       .from('files')
                       .where({
@@ -205,18 +205,18 @@ class FileController {
                         user_id : user_id
                       })
                       .first()
-      if(file == null){
+      if(file == null){//caso não encontre o arquivo, retornar mensagem
        response.status(404).send('Arquivo não encontrado')
       }
-      try {
-        if(test == null){
+      try { //caso encontre o arquivo, remover da pasta uploads e também do BD
+        if(test == null){//caso não seja teste, remover da pasta principal
           fs.unlinkSync(newPath(file.storedname))
-        }else{
+        }else{//caso contrário, remover da pasta 'uploads-test'
           fs.unlinkSync(newPath(file.storedname, 'uploads-test'))
         }
         
-        const filemodel = await File.find(file.id)
-        await filemodel.delete()
+        const filemodel = await File.find(file.id)//buscar model do arquivo
+        await filemodel.delete()//deletar no BD
         response.noContent()
       } catch(err) {
         response.badRequest(err)
